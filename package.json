@@ -1,7 +1,7 @@
 {
   "name": "petsos-web",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Versão web do PetSOS: denúncias de maus-tratos a animais com fotos e localização",
   "type": "module",
   "scripts": {

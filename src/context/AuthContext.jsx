@@ -37,6 +37,7 @@ export function AuthProvider({ children }) {
     login: authService.login,
     logout: authService.logout,
     register: authService.register,
+    resetPassword: authService.resetPassword,
     resendVerificationEmail: authService.resendVerificationEmail,
   };
 
