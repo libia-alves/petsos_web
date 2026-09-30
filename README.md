@@ -4,7 +4,7 @@ Canal web para denunciar maus-tratos contra animais pelo navegador, sem instalar
 
 > Projeto de extensão, IFMT, 9º semestre.
 
-**Versão atual:** Sprint 1 ✅ · Sprint 2 em desenvolvimento no branch [`sprint-2`](../../tree/sprint-2)
+**Branch `sprint-2`:** Sprint 1 ✅ · Sprint 2 ✅ · a versão entregue da Sprint 1 fica na [`main`](../../tree/main)
 
 ---
 
@@ -68,8 +68,8 @@ Legenda: ✅ concluída · 🚧 em desenvolvimento · 📋 planejada
 | Story | Descrição | Sprint | Prioridade | Status |
 | --- | --- | :---: | :---: | :---: |
 | Visualizar denúncias no mapa | Como usuário, quero ver as denúncias registradas em um mapa para entender onde os casos acontecem. | 1 | Alta | ✅ |
-| Abrir detalhes de uma denúncia | Como usuário, quero visualizar todos os detalhes de uma denúncia. | 2 | Alta | 🚧 |
-| Filtrar denúncias | Como usuário, quero filtrar denúncias por status ou localização. | 2 | Média | 🚧 |
+| Abrir detalhes de uma denúncia | Como usuário, quero visualizar todos os detalhes de uma denúncia. | 2 | Alta | ✅ |
+| Filtrar denúncias | Como usuário, quero filtrar denúncias por status ou localização. | 2 | Média | ✅ |
 
 ### Épico 3: Encaminhamento a órgãos parceiros
 
@@ -92,7 +92,7 @@ Legenda: ✅ concluída · 🚧 em desenvolvimento · 📋 planejada
 | --- | --- | :---: | :---: | :---: |
 | Fazer login no sistema web | Como usuário, quero entrar no sistema web com meu email ou username para registrar denúncias. | 1 ¹ | Alta | ✅ |
 | Criar conta | Como usuário, quero criar uma conta pelo navegador para poder registrar denúncias. | 1 ¹ | Alta | ✅ |
-| Recuperar senha | Como usuário, quero recuperar minha senha por email caso eu a esqueça. | 2 | Baixa | 🚧 |
+| Recuperar senha | Como usuário, quero recuperar minha senha por email caso eu a esqueça. | 2 | Baixa | ✅ |
 
 > ¹ **Login e cadastro foram adiantados para a Sprint 1.** A API só aceita denúncias de usuários autenticados e com email confirmado. Sem eles, a história "Criar denúncia" não poderia ser entregue.
 
@@ -109,7 +109,7 @@ Legenda: ✅ concluída · 🚧 em desenvolvimento · 📋 planejada
 | Sprint | Objetivo | Histórias | Status |
 | :---: | --- | --- | :---: |
 | **1** | Registrar e visualizar denúncias | Criar denúncia · Anexar fotos · Localização · Mapa · Login · Criar conta | ✅ |
-| **2** | Explorar as denúncias | Detalhes · Filtros · Recuperar senha | 🚧 |
+| **2** | Explorar as denúncias | Detalhes · Filtros · Recuperar senha | ✅ |
 | **3** | Encaminhar e acompanhar | Selecionar órgão · Status do encaminhamento · Atualizar status · Histórico | 📋 |
 | **4** | Painel institucional | Login do órgão · Denúncias encaminhadas · Atualizar status pelo órgão · Retorno do órgão | 📋 |
 
@@ -126,6 +126,15 @@ Legenda: ✅ concluída · 🚧 em desenvolvimento · 📋 planejada
 | Login | `/login` | Entrada por email ou username. |
 | Cadastro | `/cadastro` | Criação de conta, com envio de email de confirmação. |
 
+## Sprint 2: o que foi entregue
+
+| Tela | Rota | O que faz |
+| --- | --- | --- |
+| Lista de denúncias | `/denuncias` | Mais recentes, com paginação, ou por localização (endereço ou "perto de mim", raio de 1 a 50 km). |
+| Filtros | `/` e `/denuncias` | Por tipo, status e texto, tanto no mapa quanto na lista. |
+| Detalhe da denúncia | `/denuncias/:id` | Galeria de fotos, descrição, informações, mapa com endereço, link para o Google Maps e botão de copiar link. |
+| Recuperar senha | `/recuperar-senha` | Envia o email de redefinição de senha do Firebase. |
+
 **Regras da denúncia**, as mesmas da API: título com no mínimo 3 caracteres; tipo, animal e localização obrigatórios; pelo menos uma descrição **ou** uma foto; até 5 fotos JPG/PNG de até 8 MB. Antes do envio, as fotos são reduzidas para no máximo 1280 px e convertidas para JPEG.
 
 ---
@@ -134,7 +143,7 @@ Legenda: ✅ concluída · 🚧 em desenvolvimento · 📋 planejada
 
 - [React 19](https://react.dev) + [Vite 6](https://vite.dev), em JavaScript
 - [React Router](https://reactrouter.com) para as rotas
-- [Firebase Auth](https://firebase.google.com/docs/auth) para login e cadastro
+- [Firebase Auth](https://firebase.google.com/docs/auth) para login, cadastro e recuperação de senha
 - [Leaflet](https://leafletjs.com) + [React Leaflet](https://react-leaflet.js.org) com mapas do OpenStreetMap
 - [Nominatim](https://nominatim.org) para buscar endereços e converter coordenadas em endereço
 
@@ -176,12 +185,15 @@ npm run dev   # porta 3030
 
 A API grava os logs em `src/logger/logs/`, então o terminal fica em silêncio mesmo quando ela está funcionando. A documentação dos endpoints fica em `http://localhost:3030/api/docs`.
 
-Endpoints usados na Sprint 1:
+Endpoints usados:
 
 | Método | Rota | Uso |
 | --- | --- | --- |
 | `GET` | `/complaints/map` | Denúncias da área visível do mapa |
 | `POST` | `/complaints` | Criar denúncia (multipart, com fotos) |
+| `GET` | `/complaints` | Lista paginada *(Sprint 2)* |
+| `GET` | `/complaints/nearest` | Denúncias num raio de até 50 km *(Sprint 2)* |
+| `GET` | `/complaints/:id` | Detalhe da denúncia *(Sprint 2)* |
 | `GET` | `/auth/check-username/:username` | Verificar se o username está livre |
 | `GET` | `/auth/resolve-username/:username` | Login por username |
 | `POST` | `/auth/complete-profile` | Concluir o cadastro |
@@ -193,7 +205,7 @@ src/
   assets/        imagens (logo e ilustrações do app)
   components/    componentes reutilizáveis
     auth/        moldura das telas de login e cadastro
-    complaints/  card, badges, fotos
+    complaints/  card, filtros, badges, fotos
     map/         busca de endereço, seletor de local, marcadores
   config/        inicialização do Firebase
   constants/     tipos, status, animais e configurações do mapa
@@ -203,7 +215,7 @@ src/
   pages/         uma tela por rota
   services/      chamadas à API, ao Firebase e ao Nominatim
   styles/        CSS global com tema claro e escuro
-  utils/         datas, imagens e fotos
+  utils/         datas, imagens, fotos e filtros
   validators/    validação dos formulários
 ```
 

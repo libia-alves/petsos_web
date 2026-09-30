@@ -2,6 +2,18 @@ import { apiFetch, unwrapData } from './api';
 import { MAP_QUERY_LIMIT } from '@/constants/map.constants';
 
 /**
+ * Lista paginada (mais recentes primeiro)
+ * @returns {Promise<{ items: object[], pageInfo: { hasMore: boolean, nextCursor: string|null } }>}
+ */
+export async function getComplaints({ cursor, limit = 20, signal } = {}) {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (cursor) params.set('cursor', cursor);
+
+  const response = await apiFetch(`/complaints?${params}`, { signal });
+  return unwrapData(response);
+}
+
+/**
  * Denúncias dentro da área visível do mapa
  * @param {{ north: number, south: number, east: number, west: number }} bounds
  */
@@ -16,6 +28,23 @@ export async function getComplaintsInBounds(bounds, signal) {
 
   const response = await apiFetch(`/complaints/map?${params}`, { signal });
   return unwrapData(response) ?? [];
+}
+
+/** Denúncias num raio (máx. 50 km) de um ponto */
+export async function getNearbyComplaints({ lat, lng, radiusKm }, signal) {
+  const params = new URLSearchParams({
+    lat: String(lat),
+    lng: String(lng),
+    radiusKm: String(radiusKm),
+  });
+
+  const response = await apiFetch(`/complaints/nearest?${params}`, { signal });
+  return unwrapData(response) ?? [];
+}
+
+export async function getComplaintById(id, signal) {
+  const response = await apiFetch(`/complaints/${encodeURIComponent(id)}`, { signal });
+  return unwrapData(response);
 }
 
 /**

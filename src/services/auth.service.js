@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -92,6 +93,11 @@ export async function register(email, password, name, username) {
 
 export function logout() {
   return signOut(auth);
+}
+
+/** Envia o email de redefinição de senha do Firebase */
+export function resetPassword(email) {
+  return sendPasswordResetEmail(auth, email);
 }
 
 export function resendVerificationEmail() {

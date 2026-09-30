@@ -52,7 +52,7 @@ export default function LoginPage() {
       if (INVALID_CREDENTIAL_CODES.includes(error.code)) {
         setLoginError('Verifique a sua senha e nome de usuário/email e tente novamente.');
       } else if (error.code === 'auth/too-many-requests') {
-        setLoginError('Muitas tentativas. Aguarde alguns minutos e tente novamente.');
+        setLoginError('Muitas tentativas. Aguarde alguns minutos ou redefina sua senha.');
       } else {
         setLoginError('Não foi possível entrar. Tente novamente.');
       }
@@ -104,6 +104,9 @@ export default function LoginPage() {
             >
               {showPassword ? 'Ocultar senha' : 'Mostrar senha'}
             </button>
+            <Link to="/recuperar-senha" className="link-button">
+              Esqueci minha senha
+            </Link>
           </div>
           {errors.password && <span className="field-error">{errors.password}</span>}
         </div>

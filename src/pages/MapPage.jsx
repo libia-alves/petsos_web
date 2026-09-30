@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AddressSearch from '@/components/map/AddressSearch';
 import MapFocus from '@/components/map/MapFocus';
 import { getComplaintIcon, userLocationIcon } from '@/components/map/markerIcons';
 import ComplaintCard from '@/components/complaints/ComplaintCard';
+import ComplaintFilters from '@/components/complaints/ComplaintFilters';
 import { StatusBadge, TypeBadge } from '@/components/complaints/Badges';
 import { DEFAULT_CENTER, DEFAULT_ZOOM, FOCUS_ZOOM, TILE_ATTRIBUTION, TILE_URL } from '@/constants/map.constants';
-import { STATUS_CONFIG } from '@/constants/complaints.constants';
+import { EMPTY_FILTERS, STATUS_CONFIG } from '@/constants/complaints.constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useMapComplaints } from '@/hooks/useMapComplaints';
-import { sortByNewest } from '@/utils/complaint.utils';
+import { filterComplaints, sortByNewest } from '@/utils/complaint.utils';
 import { formatRelativeDate } from '@/utils/date.utils';
 
 const toBounds = (leafletBounds) => ({
@@ -35,28 +36,20 @@ function BoundsWatcher({ onChange }) {
 }
 
 export default function MapPage() {
-  const routeLocation = useLocation();
-  // Denúncia recém-criada: o formulário volta para o mapa já focado nela
-  const createdComplaint = routeLocation.state?.createdComplaint ?? null;
-
   const [bounds, setBounds] = useState(null);
-  const [focus, setFocus] = useState(() =>
-    createdComplaint?.location
-      ? {
-          latitude: Number(createdComplaint.location.latitude),
-          longitude: Number(createdComplaint.location.longitude),
-          zoom: FOCUS_ZOOM,
-        }
-      : null,
-  );
-  const [selectedId, setSelectedId] = useState(createdComplaint?.id ?? null);
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [focus, setFocus] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const markerRefs = useRef(new Map());
 
   const { complaints, isLoading, hasLoaded, error, isTooZoomedOut } = useMapComplaints(bounds);
   const { locate, isLocating, error: geoError } = useGeolocation();
 
-  const visibleComplaints = useMemo(() => sortByNewest(complaints), [complaints]);
+  const visibleComplaints = useMemo(
+    () => sortByNewest(filterComplaints(complaints, filters)),
+    [complaints, filters],
+  );
 
   const handleSelect = (complaint) => {
     setSelectedId(complaint.id);
@@ -83,19 +76,13 @@ export default function MapPage() {
   if (isTooZoomedOut) mapNotice = 'Aproxime o mapa para ver as denúncias da região.';
   else if (error) mapNotice = error;
   else if (hasLoaded && !isLoading && complaints.length === 0) mapNotice = 'Nenhuma denúncia nesta área.';
+  else if (hasLoaded && !isLoading && visibleComplaints.length === 0) {
+    mapNotice = 'Nenhuma denúncia com esses filtros nesta área.';
+  }
 
   return (
     <div className="map-page">
       <aside className="map-sidebar">
-        {createdComplaint && (
-          <div className="map-sidebar-section">
-            <div className="notice notice--success">
-              <strong>Denúncia registrada com sucesso!</strong>
-              <p>&quot;{createdComplaint.title}&quot; já aparece no mapa.</p>
-            </div>
-          </div>
-        )}
-
         <div className="map-sidebar-section">
           <h1 className="map-title">Denúncias no mapa</h1>
           <AddressSearch
@@ -112,6 +99,10 @@ export default function MapPage() {
           {geoError && <div className="alert-error">{geoError}</div>}
         </div>
 
+        <div className="map-sidebar-section">
+          <ComplaintFilters filters={filters} onChange={setFilters} />
+        </div>
+
         <div className="map-sidebar-list">
           <p className="map-sidebar-count">
             {isLoading
@@ -122,6 +113,7 @@ export default function MapPage() {
             <ComplaintCard
               key={complaint.id}
               complaint={complaint}
+              compact
               selected={complaint.id === selectedId}
               onSelect={handleSelect}
             />
@@ -162,8 +154,8 @@ export default function MapPage() {
                     <TypeBadge type={complaint.type} />
                   </div>
                   <strong>{complaint.title}</strong>
-                  {complaint.description && <p>{complaint.description}</p>}
                   <small>{formatRelativeDate(complaint.createdAt)}</small>
+                  <Link to={`/denuncias/${complaint.id}`}>Ver detalhes →</Link>
                 </div>
               </Popup>
             </Marker>

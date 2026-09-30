@@ -63,7 +63,7 @@ export default function CreateComplaintPage() {
         title: form.title.trim(),
         description: form.description.trim(),
       });
-      navigate('/', { replace: true, state: { createdComplaint: created } });
+      navigate(`/denuncias/${created.id}`, { replace: true, state: { justCreated: true } });
     } catch (error) {
       if (error.code === 'EMAIL_NOT_VERIFIED') {
         setSubmitError('Confirme seu email antes de registrar a denúncia.');

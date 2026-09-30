@@ -25,6 +25,9 @@ export default function AppLayout() {
           <NavLink to="/" end>
             Mapa
           </NavLink>
+          <NavLink to="/denuncias" end>
+            Denúncias
+          </NavLink>
         </nav>
 
         <div className="app-header-actions">

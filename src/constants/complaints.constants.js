@@ -37,6 +37,10 @@ export const STATUS_CONFIG = {
   fechado: { label: 'Fechado', color: '#6B7280' },
 };
 
+export const STATUS_OPTIONS = Object.entries(STATUS_CONFIG).map(([value, { label }]) => ({
+  value,
+  label,
+}));
 
 // Limites do upload na API (upload.middleware.js): 5 fotos, 8 MB cada, JPG ou PNG
 export const MAX_PHOTOS = 5;
@@ -45,3 +49,5 @@ export const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 export const getTypeConfig = (type) => TYPE_CONFIG[type] ?? TYPE_CONFIG.outro;
 export const getStatusConfig = (status) =>
   STATUS_CONFIG[status] ?? { label: status || 'Desconhecido', color: '#6B7280' };
+
+export const EMPTY_FILTERS = { type: null, status: null, text: '' };

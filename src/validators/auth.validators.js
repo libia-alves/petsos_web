@@ -27,3 +27,5 @@ export function validateRegisterForm({ name, email, username, password, confirmP
 
   return errors;
 }
+
+export const isValidEmail = (email) => EMAIL_REGEX.test(email.trim());
